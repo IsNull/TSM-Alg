@@ -3,6 +3,7 @@ package mse.alg.ex1;
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.UniqueCoordinateArrayFilter;
+import mse.alg.DebugUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +69,7 @@ public class ConvexHull2 {
         sortCoordinatesByX(inputPts);
 
         System.out.println("Sorted Coordinates by X:");
-        printAll(inputPts);
+        DebugUtil.printAll(inputPts);
 
         try {
             List<Coordinate> upperHull = createUpperHull(inputPts);
@@ -159,7 +160,6 @@ public class ConvexHull2 {
 
         // Remove first point of lower hull, since upper should contain it as-well.
         lowerHull.remove(0);
-        //lowerHull.remove(lowerHull.size()-1);
         upperHull.addAll(lowerHull);
 
         return upperHull.toArray(new Coordinate[upperHull.size()]);
@@ -193,18 +193,5 @@ public class ConvexHull2 {
 
 
 
-    private static void printAll(Coordinate[] inputPts) {
-        System.out.print("{ ");
-        for(Coordinate c : inputPts){
-            System.out.print(c.toString() + ", ");
-        }
-        System.out.println(" }");
-    }
-    private static void printAll(Iterable<Coordinate> inputPts) {
-        System.out.print("{ ");
-        for(Coordinate c : inputPts){
-            System.out.print(c.toString() + ", ");
-        }
-        System.out.println(" }");
-    }
+
 }
