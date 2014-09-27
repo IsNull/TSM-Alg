@@ -76,10 +76,7 @@ public class ConvexHull2 {
             List<Coordinate> lowerHull = createLowerHull(inputPts);
             return createGeometry(mergeHulls(upperHull, lowerHull));
         }catch (RuntimeException e){
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e1) {
-            }
+            // Show exception stacktrace to make debugging easier
             e.printStackTrace();
             throw e;
         }
