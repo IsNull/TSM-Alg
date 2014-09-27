@@ -53,7 +53,7 @@ public class ConvexHull2 {
      *         2 points, a {@link LineString}; 1 point, a {@link Point}; 0
      *         points, an empty {@link GeometryCollection}.
      */
-    public Geometry getConvexHull() {
+    public Geometry getConvexHull()  {
         if (inputPts.length == 0) {
             return geomFactory.createGeometryCollection(null);
         }
@@ -67,33 +67,36 @@ public class ConvexHull2 {
         // Sort coordinates by X
         sortCoordinatesByX(inputPts);
 
-        List<Coordinate> upperHull = createUpperHull(inputPts);
-        List<Coordinate> lowerHull = createLowerHull(inputPts);
+        System.out.println("Sorted Coordinates by X:");
+        printAll(inputPts);
 
-       return createGeometry(mergeHulls(upperHull, lowerHull));
+        try {
+            List<Coordinate> upperHull = createUpperHull(inputPts);
+            List<Coordinate> lowerHull = createLowerHull(inputPts);
+            return createGeometry(mergeHulls(upperHull, lowerHull));
+        }catch (RuntimeException e){
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e1) {
+            }
+            e.printStackTrace();
+            throw e;
+        }
+
+
     }
-
 
 
     private List<Coordinate> createUpperHull(Coordinate[] sortedPnts){
         List<Coordinate> upperHull = new ArrayList<Coordinate>();
 
-        upperHull.add(sortedPnts[0]);
-        upperHull.add(sortedPnts[1]);
+        upperHull.add( sortedPnts[0] );
+        upperHull.add( sortedPnts[1] );
 
-        for(int i = 2; i > sortedPnts.length; i++){
-
-            upperHull.add(sortedPnts[i]);
-
-            while (upperHull.size() > 2 &&
-                    isLeftTurn( // Check if the last 3 points are concave
-                           upperHull.get(i-2),
-                           upperHull.get(i-1),
-                           upperHull.get(i))){
-                // The hull is currently concave which is bad
-                // We remove the second last point.
-                upperHull.remove(i-1);
-            }
+        for(int i = 2; i < sortedPnts.length; i++){
+            upperHull.add( sortedPnts[i] );
+            //System.out.println("Upper Hull Added " +  sortedPnts[i] + " @ " + i);
+            reduceConcave(upperHull);
         }
 
         return upperHull;
@@ -106,21 +109,35 @@ public class ConvexHull2 {
         lowerHull.add( sortedPnts[n] );
         lowerHull.add( sortedPnts[n-1] );
 
-        for(int i = n-2; i <= 1; i--){
-            lowerHull.add( sortedPnts[i] );
+        for(int i = n-2; i >= 0; i--){
 
-            while (lowerHull.size() > 2 &&
-                    isLeftTurn( // Check if the last 3 points are concave
-                            lowerHull.get(i-2),
-                            lowerHull.get(i-1),
-                            lowerHull.get(i))){
-                // The hull is currently concave which is bad
-                // We remove the second last point.
-                lowerHull.remove(i-1);
-            }
+            lowerHull.add( sortedPnts[i] );
+            //System.out.println("Lower Hull Added " +  sortedPnts[i] + " @ " + i);
+            reduceConcave(lowerHull);
         }
 
         return lowerHull;
+    }
+
+    /**
+     *
+     * @param hull
+     */
+    private void reduceConcave(List<Coordinate> hull){
+        int j = hull.size() - 1;
+
+        while (hull.size() > 2 &&
+                isLeftTurn( // Check if the last 3 points are concave
+                        hull.get(j-2),
+                        hull.get(j-1),
+                        hull.get(j))){
+            // The hull is currently concave which is bad
+            // We remove the second last point.
+
+            //System.out.println("Reducing hull since it is concave { " + hull.get(j-2) + ", " + hull.get(j-1) + ", " + hull.get(j) + " }");
+            hull.remove(j-1);
+            j = hull.size() - 1;
+        }
     }
 
 
@@ -133,13 +150,14 @@ public class ConvexHull2 {
      */
     private boolean isLeftTurn(Coordinate p1, Coordinate p2, Coordinate p3){
         int or = CGAlgorithms.computeOrientation(p1, p2, p3);
-        return or == 1;
+        //System.out.println("Orientation " + p1 + " " + p2 + " " + p3 + " = " + or);
+        return or == -1;
     }
 
 
     private Coordinate[] mergeHulls(List<Coordinate> upperHull, List<Coordinate> lowerHull){
 
-        // Remove last and first point from hull
+        // Remove first point of lower hull, since upper should contain it as-well.
         lowerHull.remove(0);
         //lowerHull.remove(lowerHull.size()-1);
         upperHull.addAll(lowerHull);
@@ -175,5 +193,18 @@ public class ConvexHull2 {
 
 
 
-
+    private static void printAll(Coordinate[] inputPts) {
+        System.out.print("{ ");
+        for(Coordinate c : inputPts){
+            System.out.print(c.toString() + ", ");
+        }
+        System.out.println(" }");
+    }
+    private static void printAll(Iterable<Coordinate> inputPts) {
+        System.out.print("{ ");
+        for(Coordinate c : inputPts){
+            System.out.print(c.toString() + ", ");
+        }
+        System.out.println(" }");
+    }
 }
