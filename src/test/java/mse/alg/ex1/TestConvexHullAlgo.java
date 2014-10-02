@@ -4,6 +4,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import junit.framework.Assert;
+import org.junit.Test;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -12,36 +14,13 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class ConvexHullTestRunner {
+public class TestConvexHullAlgo {
 
     private static String input = "/Users/IsNull/Downloads/jts-1.13/testxml/general/TestConvexHull.xml";
 
-    private static boolean runCase(Geometry gIn, Geometry gSolution) {
-        if (gIn == null || gSolution == null) return false;
 
-        //Geometry gResult = new ConvexHull(gIn).getConvexHull();
-        Geometry gResult = new ConvexHull2(gIn).getConvexHull();
-
-        System.out.println("Result    = " + gResult);
-        System.out.println("Solution  = " + gSolution);
-
-        if (gSolution.equals(gResult)) {
-            System.out.println("Result: ok\n");
-            return true;
-        } else {
-            System.out.println("*** Wrong Result ***\n");
-            return false;
-        }
-    }
-
-    public static void main(String[] args) throws ParseException {
-        if (input == null || input.isEmpty()) {
-            if (args.length == 0) {
-                System.err.println("Usage: java ConvexHullTestRunner file" );
-                return;
-            }
-            input = args[0];
-        }
+    @Test
+    public void testConvexHullAlgorithm() throws ParseException {
 
         int nRuns = 0, nFailures = 0, nExceptions = 0;
         long time = 0;
@@ -116,5 +95,22 @@ public class ConvexHullTestRunner {
 
         System.out.println("" + nRuns + " tests (successful: " + (nRuns - nFailures - nExceptions) + ", failures: " + nFailures + ", exceptions: " + nExceptions + ")");
         System.out.println("" + time + " ms");
+    }
+
+    private static boolean runCase(Geometry gIn, Geometry gSolution) {
+        if (gIn == null || gSolution == null) {
+            Assert.assertTrue("gIn or gSOlution was ", false);
+            return false;
+        }
+
+        //Geometry gResult = new ConvexHull(gIn).getConvexHull();
+        Geometry gResult = new ConvexHull2(gIn).getConvexHull();
+
+        System.out.println("Result    = " + gResult);
+        System.out.println("Solution  = " + gSolution);
+
+        Assert.assertTrue("", gSolution.equals(gResult));
+
+        return gSolution.equals(gResult);
     }
 }
