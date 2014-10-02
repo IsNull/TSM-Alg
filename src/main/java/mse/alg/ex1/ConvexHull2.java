@@ -93,7 +93,7 @@ public class ConvexHull2 {
 
         for(int i = 2; i < sortedPnts.length; i++){
             upperHull.add( sortedPnts[i] );
-            //System.out.println("Upper Hull Added " +  sortedPnts[i] + " @ " + i);
+            //System.out.println("Upper Hull Added " +  sortedPnts[i] + " @ " + i);
             reduceConcave(upperHull);
         }
 
@@ -110,7 +110,7 @@ public class ConvexHull2 {
         for(int i = n-2; i >= 0; i--){
 
             lowerHull.add( sortedPnts[i] );
-            //System.out.println("Lower Hull Added " +  sortedPnts[i] + " @ " + i);
+            //System.out.println("Lower Hull Added " +  sortedPnts[i] + " @ " + i);
             reduceConcave(lowerHull);
         }
 
@@ -155,14 +155,36 @@ public class ConvexHull2 {
 
     private Coordinate[] mergeHulls(List<Coordinate> upperHull, List<Coordinate> lowerHull){
 
+        //Check if both Hulls are the same --> Line with multiple points
+        if(upperHull.size() == lowerHull.size()){
+            if(compareHulls(upperHull, lowerHull)){
+                return new Coordinate[] { upperHull.get(0), upperHull.get(upperHull.size()-1) };
+            }
+        }
+
         // Remove first point of lower hull, since upper should contain it as-well.
         lowerHull.remove(0);
         upperHull.addAll(lowerHull);
 
+
         return upperHull.toArray(new Coordinate[upperHull.size()]);
     }
 
+    private boolean compareHulls(List<Coordinate> upperHull, List<Coordinate> lowerHull){
+
+        //Check if both Hulls are the same --> Line
+        for(int i = 0; i < upperHull.size(); i++){
+            if(upperHull.get(upperHull.size()-i-1).compareTo(lowerHull.get(i)) != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Geometry createGeometry(Coordinate[] hull){
+        if (hull.length == 2) {
+            return geomFactory.createLineString(new Coordinate[] { hull[0], hull[1] });
+        }
         if (hull.length == 3) {
             return geomFactory.createLineString(new Coordinate[] { hull[0], hull[1] });
         }
