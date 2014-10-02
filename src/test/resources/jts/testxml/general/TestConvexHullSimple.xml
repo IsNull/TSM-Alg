@@ -1,0 +1,19 @@
+<run>
+
+
+<case>
+  <desc>Simple Test</desc>
+  <a>
+    POLYGON(
+      (0 0, 20 20, 40 0, 40 40, 0 40, 0 0))
+  </a>
+<test>
+  <op name="convexhull" arg1="A">
+    POLYGON(
+      (0 0, 40 0, 40 40, 0 40, 0 0))
+  </op>
+</test>
+</case>
+
+
+</run>
