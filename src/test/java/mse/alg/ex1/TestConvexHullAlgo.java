@@ -11,24 +11,35 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.InputStream;
 
 public class TestConvexHullAlgo {
 
-    private static String input = "/Users/IsNull/Downloads/jts-1.13/testxml/general/TestConvexHull.xml";
-
 
     @Test
-    public void testConvexHullAlgorithm() throws ParseException {
+    public void testConvexHullAlgorithm(){
+        String testCase = "/jts/testxml/general/TestConvexHull.xml";
+        InputStream is = getClass().getResourceAsStream(testCase);
+        try {
+            if(is == null){
+                Assert.fail("Can not read resource :" + testCase);
+            }
+            doTestConvex(is);
+        }catch (ParseException e){
+            e.printStackTrace();
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    public void doTestConvex(InputStream is) throws ParseException {
 
         int nRuns = 0, nFailures = 0, nExceptions = 0;
         long time = 0;
 
         try {
-            FileReader fr = new FileReader(input);
+
             XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader parser = factory.createXMLStreamReader(fr);
+            XMLStreamReader parser = factory.createXMLStreamReader(is);
             boolean inDesc = false, inInput = false, inSolution = false;
             StringBuilder sb = new StringBuilder();
             String s;
@@ -88,9 +99,7 @@ public class TestConvexHullAlgo {
 
             parser.close();
         } catch (XMLStreamException ex) {
-            System.out.println(ex);
-        } catch (IOException ex) {
-            System.out.println("IOException while parsing " + input);
+            ex.printStackTrace();
         }
 
         System.out.println("" + nRuns + " tests (successful: " + (nRuns - nFailures - nExceptions) + ", failures: " + nFailures + ", exceptions: " + nExceptions + ")");
