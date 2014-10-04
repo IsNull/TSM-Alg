@@ -4,7 +4,6 @@ import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.math.Vector3D;
 import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class Main {
 				Vector3D v12 = new Vector3D(p1.x - p0.x, p1.y - p0.y, p1.z - p0.z);
 				Vector3D v13 = new Vector3D(p2.x - p0.x, p2.y - p0.y, p2.z - p0.z);
 				Vector3D v = new Vector3D(p0.x - viewPoint.x, p0.y - viewPoint.y, p0.z - viewPoint.z).normalize();
-				Vector3D norm = norm(v12, v13);
+				Vector3D norm = MathUtil.norm(v12, v13);
 
 				// test for front- or back-facing triangle
 				if (v.dot(norm) < 0) { // cos of angle between vectors is negative
@@ -88,9 +87,8 @@ public class Main {
 	 * @param chains upper boundaries of projected triangles
 	 * @return computed horizon
 	 */
-	public static Horizon computeHorizon(ArrayList<MonotoneChain> chains) {
-		// TODO: compute horizon
-        throw new NotImplementedException();
+	public static Horizon computeHorizon(List<MonotoneChain> chains) {
+       return  new HorizonAlgorithm().computeHorizon(chains);
 	}
 	
 	/**
@@ -106,14 +104,14 @@ public class Main {
 	public static MonotoneChain computeUpperBoundary(Coordinate viewPoint, Coordinate p0, Coordinate p1, Coordinate p2) {
 		Coordinate minX, midX, maxX;
 		
-		p0 = cylindricalProjection(viewPoint, p0);
+		p0 = MathUtil.cylindricalProjection(viewPoint, p0);
 		if (p0 != null) {
 			minX = maxX = p0;
-			p1 = cylindricalProjection(viewPoint, p1);
+			p1 = MathUtil.cylindricalProjection(viewPoint, p1);
 			if (p1 != null) {
 				if (p1.compareTo(minX) < 0) minX = p1;
 				if (p1.compareTo(maxX) > 0) maxX = p1;
-				p2 = cylindricalProjection(viewPoint, p2);
+				p2 = MathUtil.cylindricalProjection(viewPoint, p2);
 				if (p2 != null) {
 					if (p2.compareTo(minX) < 0) minX = p2;
 					if (p2.compareTo(maxX) > 0) maxX = p2;
@@ -142,55 +140,5 @@ public class Main {
 		return null;
 	}
 	
-	/**
-	 * Compute normal vectors of plane span by two vectors.
-	 * 
-	 * @param a vector in the plane
-	 * @param b vector in the plane
-	 * @return normal vector with positive z-coordinate
-	 */
-	public static Vector3D norm(Vector3D a, Vector3D b) {
-		// TODO
-        throw new NotImplementedException();
-	}
 
-	/**
-	 * Computes the squared 3-dimensional Euclidean distance between two locations.
-	 * 
-	 * @param a a point
-	 * @param b a point
-	 * @return the squared 3-dimensional Euclidean distance between two locations
-	 */
-	public static double squareDist(Coordinate a, Coordinate b) {
-		double dx = a.x - b.x;
-		double dy = a.y - b.y;
-		double dz = a.z - b.z;
-
-		return dx*dx + dy*dy + dz*dz;
-	}
-	
-	/**
-	 * Compute cylindrical projection of point p
-	 * 
-	 * @param vp view point =  center of cylinder
-	 * @param p point to be projected
-	 * @return projected point
-	 */
-	public static Coordinate cylindricalProjection(Coordinate vp, Coordinate p) {
-		final double xScale = 1000;		// arbitrary scaling factor
-		final double yScale = 10000;	// arbitrary scaling factor: in reality: xScale = yScale
-		final double max = Math.PI*xScale - 1.0e-10;
-		
-		double dist = vp.distance(p);
-		if (dist == 0) return null;
-		
-		double x = Math.atan2(vp.y - p.y, vp.x - p.x)*xScale;
-		
-		if (x < -max || x > max) {
-			return null;
-		} else {
-			double y = yScale*(p.z - vp.z)/dist;
-			return new Coordinate(x, y);
-		}
-	}
 }
