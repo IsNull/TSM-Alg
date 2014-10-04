@@ -1,8 +1,8 @@
-package
+package  mse.alg.ex2;
 
 import java.util.PriorityQueue;
 
-package  mse.alg.ex2;
+
 
 import java.util.PriorityQueue;
 
