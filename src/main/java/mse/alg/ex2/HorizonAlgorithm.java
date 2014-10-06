@@ -30,8 +30,9 @@ public class HorizonAlgorithm {
             return new Horizon(chains.get(start));
         }else{
             // Too complex for us - Further divide!
-            Horizon part1 = computeHorizon(chains, start, end / 2);
-            Horizon part2 = computeHorizon(chains, end / 2 + 1, end);
+            int middle = (start + end) / 2;
+            Horizon part1 = computeHorizon(chains, start, middle);
+            Horizon part2 = computeHorizon(chains, middle + 1, end);
 
             return part1.merge(part2);
         }

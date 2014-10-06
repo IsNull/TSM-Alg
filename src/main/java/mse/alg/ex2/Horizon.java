@@ -49,8 +49,20 @@ public class Horizon {
 		Horizon horizon = new Horizon();
 		SweepLine<Status> sl = new SweepLine<Status>(new Status(horizon));
 
-		// TODO: fill in sweep line with initial events
-		// TODO: run sweep line process
+        double timeCount = 0;
+
+        for(MonotoneChain monotoneChain : m_chains){
+
+            sl.addEvent(new StartEvent(sl, timeCount++, monotoneChain));
+
+            for(int i=1; i < monotoneChain.size()-1; i++){
+                sl.addEvent(new InnerEvent(sl, timeCount++, monotoneChain, i));
+            }
+
+            sl.addEvent(new StopEvent(sl, timeCount++, monotoneChain, monotoneChain.size()-1));
+        }
+
+        sl.process();
 		
 		assert horizon.isValid() : "invalid horizon";
 		
