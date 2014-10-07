@@ -34,7 +34,7 @@ public class SortHorizon {
 
     }
 
-    public MonotoneChain getChain(){
+    public MonotoneChain getNext(){
         for(int i=0;i<chains.get(outIndex).size();i++){
         }
         //Handle s Start Event
@@ -83,7 +83,7 @@ public class SortHorizon {
 
     }
 
-    public int getNextIndex(){
+    public int getIndex(){
         return inIndex;
     }
     public String getStatus(){
@@ -94,11 +94,11 @@ public class SortHorizon {
         return stopIndex;
     }
 
-    public double getNextX(){
+    public double getX(){
         return chains.get(outIndex).get(inIndex).x;
     }
 
-    public double getNextY(){
+    public double getY(){
         return chains.get(outIndex).get(inIndex).y;
     }
 

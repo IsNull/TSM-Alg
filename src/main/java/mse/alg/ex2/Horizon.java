@@ -45,8 +45,6 @@ public class Horizon {
         Horizon horizon = new Horizon();
         SweepLine<Status> sl = new SweepLine<Status>(new Status(horizon));
 
-        double timeCount = 0;
-
         /*
         //Debug
         System.out.println("--- Start ---");
@@ -67,46 +65,46 @@ public class Horizon {
 
         while(!sort1.isFinished() || !sort2.isFinished()) {
             if (!sort1.isFinished()) {
-                if (sort2.isFinished() || sort1.getNextX() <= sort2.getNextX()) {
+                if (sort2.isFinished() || sort1.getX() <= sort2.getX()) {
 
                     if (sort1.isNextStart()) {
-                        //System.out.println("Start-S1-Index:"+sort1.getNextX());
-                        sl.addEvent(new StartEvent(sl, sort1.getNextX(), sort1.getChain()));
+                        //System.out.println("Start-S1-Index:"+sort1.getX());
+                        sl.addEvent(new StartEvent(sl, sort1.getX(), sort1.getNext()));
                         continue;
                     }
                     if (sort1.isNextStop()) {
-                        //System.out.print("Stop-S1-Index:"+sort1.getNextX());
-                        sl.addEvent(new StopEvent(sl, sort1.getNextX(), sort1.getChain(), sort1.getStopIndex()));
+                        //System.out.print("Stop-S1-Index:"+sort1.getX());
+                        sl.addEvent(new StopEvent(sl, sort1.getX(), sort1.getNext(), sort1.getStopIndex()));
                         //System.out.println("-->"+sort1.getStopIndex());
                         continue;
                     }
                     if (sort1.isNextInner()) {
-                        //System.out.print("Inner-S1-Index:"+sort1.getNextX());
-                        sl.addEvent(new InnerEvent(sl, sort1.getNextX(), sort1.getChain(), sort1.getNextIndex() - 1));
-                        //System.out.println("-->"+(sort1.getNextIndex() - 1));
+                        //System.out.print("Inner-S1-Index:"+sort1.getX());
+                        sl.addEvent(new InnerEvent(sl, sort1.getX(), sort1.getNext(), sort1.getIndex() - 1));
+                        //System.out.println("-->"+(sort1.getIndex() - 1));
                         continue;
                     }
 
                 }
             }
             if (!sort2.isFinished()) {
-                if (sort1.isFinished() || sort2.getNextX() <= sort1.getNextX()) {
+                if (sort1.isFinished() || sort2.getX() <= sort1.getX()) {
 
                     if (sort2.isNextStart()) {
-                        //System.out.println("Start-S2-Index:"+sort2.getNextX());
-                        sl.addEvent(new StartEvent(sl, sort2.getNextX(), sort2.getChain()));
+                        //System.out.println("Start-S2-Index:"+sort2.getX());
+                        sl.addEvent(new StartEvent(sl, sort2.getX(), sort2.getNext()));
                         continue;
                     }
                     if (sort2.isNextStop()) {
-                        //System.out.print("Stop-S2-Index:"+sort2.getNextX());
-                        sl.addEvent(new StopEvent(sl, sort2.getNextX(), sort2.getChain(), sort2.getStopIndex()));
+                        //System.out.print("Stop-S2-Index:"+sort2.getX());
+                        sl.addEvent(new StopEvent(sl, sort2.getX(), sort2.getNext(), sort2.getStopIndex()));
                         //System.out.println("-->"+sort2.getStopIndex());
                         continue;
                     }
                     if (sort2.isNextInner()) {
-                        //System.out.print("Inner-S2-Index:"+sort2.getNextX());
-                        sl.addEvent(new InnerEvent(sl, sort2.getNextX(), sort2.getChain(), sort2.getNextIndex() - 1));
-                        //System.out.println("-->"+(sort2.getNextIndex() - 1));
+                        //System.out.print("Inner-S2-Index:"+sort2.getX());
+                        sl.addEvent(new InnerEvent(sl, sort2.getX(), sort2.getNext(), sort2.getIndex() - 1));
+                        //System.out.println("-->"+(sort2.getIndex() - 1));
                         continue;
                     }
                 }
