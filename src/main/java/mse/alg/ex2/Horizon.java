@@ -1,11 +1,7 @@
 package  mse.alg.ex2;
 
 import com.vividsolutions.jts.geom.LineString;
-
-
-
 import java.util.LinkedList;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -45,29 +41,84 @@ public class Horizon {
 	 * @param h second horizon
 	 * @return merged horizon
 	 */
-	public Horizon merge(Horizon h) {
-		Horizon horizon = new Horizon();
-		SweepLine<Status> sl = new SweepLine<Status>(new Status(horizon));
+    public Horizon merge(Horizon h) {
+        Horizon horizon = new Horizon();
+        SweepLine<Status> sl = new SweepLine<Status>(new Status(horizon));
 
         double timeCount = 0;
 
-        for(MonotoneChain monotoneChain : m_chains){
+        /*
+        //Debug
+        System.out.println("--- Start ---");
+        for(int j=0; j < this.m_chains.size(); j++) {
+            for (int i = 0; i < this.m_chains.get(j).size(); i++) {
+                System.out.println(j + "-this: " + this.m_chains.get(j).get(i).toString());
+            }
+        }
+        for(int j=0; j < h.m_chains.size(); j++) {
+            for (int i = 0; i < h.m_chains.get(j).size(); i++) {
+                System.out.println(j + "-h: " + h.m_chains.get(j).get(i).toString());
+            }
+        }
+        */
 
-            sl.addEvent(new StartEvent(sl, timeCount++, monotoneChain));
+        SortHorizon sort1 = new SortHorizon(this.m_chains);
+        SortHorizon sort2 = new SortHorizon(h.m_chains);
 
-            for(int i=1; i < monotoneChain.size()-1; i++){
-                sl.addEvent(new InnerEvent(sl, timeCount++, monotoneChain, i));
+        while(!sort1.isFinished() || !sort2.isFinished()) {
+            if (!sort1.isFinished()) {
+                if (sort2.isFinished() || sort1.getNextX() <= sort2.getNextX()) {
+
+                    if (sort1.isNextStart()) {
+                        //System.out.println("Start-S1-Index:"+sort1.getNextX());
+                        sl.addEvent(new StartEvent(sl, sort1.getNextX(), sort1.getChain()));
+                        continue;
+                    }
+                    if (sort1.isNextStop()) {
+                        //System.out.print("Stop-S1-Index:"+sort1.getNextX());
+                        sl.addEvent(new StopEvent(sl, sort1.getNextX(), sort1.getChain(), sort1.getStopIndex()));
+                        //System.out.println("-->"+sort1.getStopIndex());
+                        continue;
+                    }
+                    if (sort1.isNextInner()) {
+                        //System.out.print("Inner-S1-Index:"+sort1.getNextX());
+                        sl.addEvent(new InnerEvent(sl, sort1.getNextX(), sort1.getChain(), sort1.getNextIndex() - 1));
+                        //System.out.println("-->"+(sort1.getNextIndex() - 1));
+                        continue;
+                    }
+
+                }
+            }
+            if (!sort2.isFinished()) {
+                if (sort1.isFinished() || sort2.getNextX() <= sort1.getNextX()) {
+
+                    if (sort2.isNextStart()) {
+                        //System.out.println("Start-S2-Index:"+sort2.getNextX());
+                        sl.addEvent(new StartEvent(sl, sort2.getNextX(), sort2.getChain()));
+                        continue;
+                    }
+                    if (sort2.isNextStop()) {
+                        //System.out.print("Stop-S2-Index:"+sort2.getNextX());
+                        sl.addEvent(new StopEvent(sl, sort2.getNextX(), sort2.getChain(), sort2.getStopIndex()));
+                        //System.out.println("-->"+sort2.getStopIndex());
+                        continue;
+                    }
+                    if (sort2.isNextInner()) {
+                        //System.out.print("Inner-S2-Index:"+sort2.getNextX());
+                        sl.addEvent(new InnerEvent(sl, sort2.getNextX(), sort2.getChain(), sort2.getNextIndex() - 1));
+                        //System.out.println("-->"+(sort2.getNextIndex() - 1));
+                        continue;
+                    }
+                }
+
             }
 
-            sl.addEvent(new StopEvent(sl, timeCount++, monotoneChain, monotoneChain.size()-1));
         }
 
         sl.process();
-		
-		assert horizon.isValid() : "invalid horizon";
-		
-		return horizon;
-	}
+        assert horizon.isValid() : "invalid horizon";
+        return horizon;
+    }
 	
 	/**
 	 * Checks x-monotonicity of this horizon in O(n) time

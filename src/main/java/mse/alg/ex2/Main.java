@@ -16,8 +16,9 @@ public class Main {
 		GeometryFactory factory = new GeometryFactory();
 		
 		// read terrain x:[677000..687000], y:[242000..257000]
-		IO.setPath("\\"); // TODO: set correct directory path
-		List<Coordinate> terrainPts = IO.readTerrain("Zurich25m.csv");
+		//IO.setPath("\\"); // TODO: set correct directory path
+        IO.setPath("C:\\Users\\Simon\\Documents\\Git_Projects\\TSM-Alg\\src\\main\\java\\mse\\alg\\ex2\\"); // TODO: set correct directory path
+        List<Coordinate> terrainPts = IO.readTerrain("Zurich25m.csv");
 		
 		// build triangulation
 		DelaunayTriangulationBuilder terrainBuilder = new DelaunayTriangulationBuilder();
