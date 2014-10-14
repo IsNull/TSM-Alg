@@ -206,7 +206,7 @@ public class VectorQuantization implements IImageProcessor {
 	 * @param palColors palette colors
 	 */
 	private void kMeans(ImageData inData, Coordinate[] palColors) {
-		@SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
 		List<RGB>[] assoc = new List[palColors.length]; // all pixels of the same nearest palette color
 		int maxIterations = 100; // in case of no convergence
 		boolean changing = true;
@@ -505,7 +505,41 @@ public class VectorQuantization implements IImageProcessor {
 	 */
 	private boolean farther(Envelope3D cell, Coordinate c1, Coordinate c2) {
 		// TODO
-		return false;
+
+
+        double tmpX = c2.x - c1.x;
+        double tmpY = c2.y - c1.y;
+        double tmpZ = c2.z - c1.z;
+
+        double vhX = 0;
+        double vhY = 0;
+        double vhZ = 0;
+
+        if(tmpX < 0){
+            vhX = cell.getMinX();
+        }else{
+            vhX = cell.getMaxX();
+        }
+
+        if(tmpY < 0){
+            vhY = cell.getMinY();
+        }else{
+            vhY = cell.getMaxY();
+        }
+
+        if(tmpZ < 0){
+            vhZ = cell.getMinZ();
+        }else{
+            vhZ = cell.getMaxZ();
+        }
+
+
+        Coordinate vh = new Coordinate(vhX, vhY, vhZ);
+
+        double distanceC1 = vh.distance(c1);
+        double distanceC2 = vh.distance(c2);
+
+        return distanceC2 > distanceC1;
 	}
 	
 	static private RGB coordToRGB(Coordinate coord) {

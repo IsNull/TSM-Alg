@@ -81,46 +81,43 @@ public class KdTree3D<E> {
         List<MultiCoordinate3D> p2 = new ArrayList<>();
 
         int medianIndex = points.size() / 2;
-
+        //System.out.println("points coint: " + points.size() + " , depth: " + depth);
         // Base Case
         if(points.size() == 1){
             return new KdNode3D(new Coordinate(points.get(0).x,points.get(0).y, points.get(0).z), points.get(0));
         }else if(depth%3 == 0){
             points.sort(ProjComp[0]); // Sort by x values
 
-            for(int i=0; i<=medianIndex; i++){
+            for(int i=0; i<medianIndex; i++){
                 p1.add(points.get(i));
             }
-            for(int i=medianIndex+1; i<points.size(); i++){
+            for(int i=medianIndex; i<points.size(); i++){
                 p2.add(points.get(i));
             }
 
         }else if(depth%3 == 1){
             points.sort(ProjComp[1]); // Sort by y values
 
-            for(int i=0; i<=medianIndex; i++){
+            for(int i=0; i<medianIndex; i++){
                 p1.add(points.get(i));
             }
-            for(int i=medianIndex+1; i<points.size(); i++){
+            for(int i=medianIndex; i<points.size(); i++){
                 p2.add(points.get(i));
             }
 
         }else{
             points.sort(ProjComp[2]); // Sort by z values
 
-            for(int i=0; i<=medianIndex; i++){
+            for(int i=0; i<medianIndex; i++){
                 p1.add(points.get(i));
             }
-            for(int i=medianIndex+1; i<points.size(); i++){
+            for(int i=medianIndex; i<points.size(); i++){
                 p2.add(points.get(i));
             }
         }
 
-
         KdNode3D vLeft = buildTree(p1,depth+1);
         KdNode3D vRight = buildTree(p2,depth+1);
-
-
 
         KdNode3D root = new KdNode3D(new Coordinate(points.get(medianIndex).x,points.get(medianIndex).y, points.get(medianIndex).z), null);
         //KdNode3D root = new KdNode3D()
