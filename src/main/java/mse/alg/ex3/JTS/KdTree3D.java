@@ -74,54 +74,54 @@ public class KdTree3D<E> {
 	 * @return root node
 	 */
 	public KdNode3D<E> buildTree(List<? extends MultiCoordinate3D> points, int depth) {
-        // TODO
-        // there are already three comparators for x, y and z: ProjComp[i]
+        // TODO done
+        // Note: This implementation is based on the pseudo-code on the module slides 4 Range Seachring slide 19
 
+        // Initialize two lists which will hold the left and right child elements of each node.
         List<MultiCoordinate3D> p1 = new ArrayList<>();
         List<MultiCoordinate3D> p2 = new ArrayList<>();
 
+        // Calculate the median index based.
         int medianIndex = points.size() / 2;
+
         //System.out.println("points coint: " + points.size() + " , depth: " + depth);
-        // Base Case
+
+        // Base Case for recursion
         if(points.size() == 1){
+            // If there is only one point left within a bounding box return the point as a node with its object value
+            // TODO maybe the object value points.get(0) is wrong. We just didn't know what parameter it should be.
             return new KdNode3D(new Coordinate(points.get(0).x,points.get(0).y, points.get(0).z), points.get(0));
-        }else if(depth%3 == 0){
-            points.sort(ProjComp[0]); // Sort by x values
-
-            for(int i=0; i<medianIndex; i++){
-                p1.add(points.get(i));
-            }
-            for(int i=medianIndex; i<points.size(); i++){
-                p2.add(points.get(i));
-            }
-
-        }else if(depth%3 == 1){
-            points.sort(ProjComp[1]); // Sort by y values
-
-            for(int i=0; i<medianIndex; i++){
-                p1.add(points.get(i));
-            }
-            for(int i=medianIndex; i<points.size(); i++){
-                p2.add(points.get(i));
-            }
-
-        }else{
-            points.sort(ProjComp[2]); // Sort by z values
-
-            for(int i=0; i<medianIndex; i++){
-                p1.add(points.get(i));
-            }
-            for(int i=medianIndex; i<points.size(); i++){
-                p2.add(points.get(i));
-            }
         }
 
+        // Determine the level type of the tree. In the kd-tree algorithm each iteration is focused either on the x, the y or the z axis.
+        // In order to know how the points need to be sorted, we need to know in which iteration we are currently at.
+        int lvlType = depth%3;
+        switch (lvlType){
+            case 0 :
+                points.sort(ProjComp[0]); // Sort by x values
+            case 1 :
+                points.sort(ProjComp[1]); // Sort by y values
+            case 2 :
+                points.sort(ProjComp[2]); // Sort by z values
+        }
+
+        // Now that the points are sorted by the correct axis we need to store the values left and right from the median separately.
+        for(int i=0; i<medianIndex; i++){
+            p1.add(points.get(i));
+        }
+        for(int i=medianIndex; i<points.size(); i++){
+            p2.add(points.get(i));
+        }
+
+        // Create two individual nodes which represent the child nodes of this node by calling buildTree recursively.
         KdNode3D vLeft = buildTree(p1,depth+1);
         KdNode3D vRight = buildTree(p2,depth+1);
 
+        // Create the current root node. It is initialized with the x,y,z values of the current median so the tree can be traversed effectively.
+        // TODO maybe the object value null is wrong. We just didn't know what parameter it should be.
         KdNode3D root = new KdNode3D(new Coordinate(points.get(medianIndex).x,points.get(medianIndex).y, points.get(medianIndex).z), null);
-        //KdNode3D root = new KdNode3D()
 
+        // Add the two child nodes to the current root node.
         root.setLeft(vLeft);
         root.setRight(vRight);
 

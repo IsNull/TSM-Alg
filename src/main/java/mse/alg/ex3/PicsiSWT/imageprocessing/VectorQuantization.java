@@ -203,7 +203,7 @@ public class VectorQuantization implements IImageProcessor {
 	/**
 	 * Standard k-Means algorithm
 	 * @param inData input image
-	 * @param palColors palette colors
+	 * @param palColors palette colors, represent the chosen centroids
 	 */
 	private void kMeans(ImageData inData, Coordinate[] palColors) {
         @SuppressWarnings("unchecked")
@@ -225,15 +225,21 @@ public class VectorQuantization implements IImageProcessor {
 		
 		// stop iterative process if the associations don't change anymore
 		while(changing) {
-			//changing = false;
-			
+
 			// compute new palette colors
-			// TODO
+			// TODO done
+
+            // Iterate through the whole List of LinkedList. Each LinkedList represents a cluster which need to be generalized
+            // by one color. We therefore need to calculate the average color value.
             for(int i=0; i<assoc.length; i++){
+
+                // Initialize r,g,b sum variables which will contain the total amount of
+                // red, green and blue percentage of all points within a cluster.
                 double tmpR = 0;
                 double tmpG = 0;
                 double tmpB = 0;
 
+                // For each pixel/point we take the r,g,b values and add them to the corresponding variable.
                 double counter = 0;
                 for(RGB rgb : assoc[i]){
                     tmpR += rgb.red;
@@ -242,20 +248,22 @@ public class VectorQuantization implements IImageProcessor {
 
                     counter++;
                 }
+
+                // Clear the points of the cluster, since we will add them again with new r,g,b values later below.
                 assoc[i].clear();
+
+                // Set the new centroid to the color palette by calculating the average color of the cluster.
                 if(counter >0){
                     palColors[i].setCoordinate(new Coordinate(tmpR/counter, tmpG/counter, tmpB/counter));
                 }else {
                     System.out.println("LinkedList in Assoc Array at position: " + i + " was empty!");
                 }
-
-
             }
 			
 			// compute new associations
-			// TODO
-            // fill in the association list
+			// TODO done
 
+            // fill in the association list
             for (int v=0; v < inData.height; v++) {
                 for (int u=0; u < inData.width; u++) {
                     RGB rgb = inData.palette.getRGB(inData.getPixel(u, v));
@@ -497,24 +505,29 @@ public class VectorQuantization implements IImageProcessor {
 	
 	/**
 	 * Checks if point c2 is farther from cell than point c1
-	 * 
+	 * A cell is the bounding box of a point set. In this case it is a hyper-rectangle.
 	 * @param cell
 	 * @param c1
 	 * @param c2
 	 * @return true if point c2 is farther from cell than point c1
 	 */
 	private boolean farther(Envelope3D cell, Coordinate c1, Coordinate c2) {
-		// TODO
+		// TODO done
 
-
+        // Calculate the connecting vector between c1 and c2.
         double tmpX = c2.x - c1.x;
         double tmpY = c2.y - c1.y;
         double tmpZ = c2.z - c1.z;
 
+        // Initialize the coordinate values of the point vH which is the crucial point to check its distance.
+        // If this point is closer to c1 then all of the points in the cell will be closer to c1. The same goes for the case
+        // when the point is closer to c2.
         double vhX = 0;
         double vhY = 0;
         double vhZ = 0;
 
+        // Below we check the x,y,z components of the connecting vector if they are negative. If so we need to take the minimum x,y,z value
+        // of all points within the cell respectively. Check FilteringAlgorithm.pdf section 2 below fig 1 for more detail.
         if(tmpX < 0){
             vhX = cell.getMinX();
         }else{
@@ -533,12 +546,14 @@ public class VectorQuantization implements IImageProcessor {
             vhZ = cell.getMaxZ();
         }
 
-
+        // Create point vH which is the only point we need to check its distance to c1 and c2.
         Coordinate vh = new Coordinate(vhX, vhY, vhZ);
 
+        // Check the distances.
         double distanceC1 = vh.distance(c1);
         double distanceC2 = vh.distance(c2);
 
+        // If the distance from vH to c2 is bigger we return true, which means the cell is farther away from c2 as from c1.
         return distanceC2 > distanceC1;
 	}
 	
