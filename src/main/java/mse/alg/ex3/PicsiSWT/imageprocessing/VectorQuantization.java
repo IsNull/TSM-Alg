@@ -295,7 +295,7 @@ public class VectorQuantization implements IImageProcessor {
 		// remove duplicated colors and build point list used to build the kd-tree
 		// build homogeneous, balanced kd-tree
 		System.out.println("Build kd-Tree");
-		KdNode3D<NodeData> root = kdTree.buildTree(distinctColors(inData));
+		KdNode3D<NodeData> root = kdTree.buildTree(distinctColors(inData),0);
 		
 		System.out.println("Image Size: " + size);
 		//System.out.println("Multi-Point Size: " + points.size());

@@ -73,10 +73,61 @@ public class KdTree3D<E> {
 	 * @param points Tree content
 	 * @return root node
 	 */
-	public KdNode3D<E> buildTree(List<? extends MultiCoordinate3D> points) {
-		// TODO
-		// there are already three comparators for x, y and z: ProjComp[i]
-		
+	public KdNode3D<E> buildTree(List<? extends MultiCoordinate3D> points, int depth) {
+        // TODO
+        // there are already three comparators for x, y and z: ProjComp[i]
+
+        List<MultiCoordinate3D> p1 = new ArrayList<>();
+        List<MultiCoordinate3D> p2 = new ArrayList<>();
+
+        int medianIndex = points.size() / 2;
+
+        // Base Case
+        if(points.size() == 1){
+            return new KdNode3D(new Coordinate(points.get(0).x,points.get(0).y, points.get(0).z), points.get(0));
+        }else if(depth%3 == 0){
+            points.sort(ProjComp[0]); // Sort by x values
+
+            for(int i=0; i<=medianIndex; i++){
+                p1.add(points.get(i));
+            }
+            for(int i=medianIndex+1; i<points.size(); i++){
+                p2.add(points.get(i));
+            }
+
+        }else if(depth%3 == 1){
+            points.sort(ProjComp[1]); // Sort by y values
+
+            for(int i=0; i<=medianIndex; i++){
+                p1.add(points.get(i));
+            }
+            for(int i=medianIndex+1; i<points.size(); i++){
+                p2.add(points.get(i));
+            }
+
+        }else{
+            points.sort(ProjComp[2]); // Sort by z values
+
+            for(int i=0; i<=medianIndex; i++){
+                p1.add(points.get(i));
+            }
+            for(int i=medianIndex+1; i<points.size(); i++){
+                p2.add(points.get(i));
+            }
+        }
+
+
+        KdNode3D vLeft = buildTree(p1,depth+1);
+        KdNode3D vRight = buildTree(p2,depth+1);
+
+
+
+        KdNode3D root = new KdNode3D(new Coordinate(points.get(medianIndex).x,points.get(medianIndex).y, points.get(medianIndex).z), null);
+        //KdNode3D root = new KdNode3D()
+
+        root.setLeft(vLeft);
+        root.setRight(vRight);
+
 		assert size() == points.size() : "wrong tree size: " + size() + ", " + points.size();
 		return root;
 	}
