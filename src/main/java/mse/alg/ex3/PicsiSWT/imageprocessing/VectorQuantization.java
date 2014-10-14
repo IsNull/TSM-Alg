@@ -230,11 +230,11 @@ public class VectorQuantization implements IImageProcessor {
 			// compute new palette colors
 			// TODO
             for(int i=0; i<assoc.length; i++){
-                int tmpR = 0;
-                int tmpG = 0;
-                int tmpB = 0;
+                double tmpR = 0;
+                double tmpG = 0;
+                double tmpB = 0;
 
-                int counter = 0;
+                double counter = 0;
                 for(RGB rgb : assoc[i]){
                     tmpR += rgb.red;
                     tmpB += rgb.blue;
