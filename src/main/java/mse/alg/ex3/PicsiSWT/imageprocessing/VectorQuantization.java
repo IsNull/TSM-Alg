@@ -25,7 +25,11 @@ public class VectorQuantization implements IImageProcessor {
 	private static class CenterData {
 		int m_count; // number of points
 		double m_cumX, m_cumY, m_cumZ; // cumulated x,y,z values of count points
-		
+
+        /**
+         * Cumulates the RGB values of the given node to the overall sum.
+         * @param node
+         */
 		public void cumulate(KdNode3D<NodeData> node) {
 			assert node != null : "node is null";
 			
@@ -38,7 +42,11 @@ public class VectorQuantization implements IImageProcessor {
 			m_cumY += count*coord.y;
 			m_cumZ += count*coord.z;
 		}
-		
+
+        /**
+         * Cumulates the RGB values of the given CenterData to this CenterData.
+         * @param cd
+         */
 		public void cumulateSubtree(CenterData cd) {
 			assert cd != null : "cd is null";
 			
@@ -59,7 +67,10 @@ public class VectorQuantization implements IImageProcessor {
 		public double meanZ() {
 			return m_cumZ/m_count;
 		}
-		
+
+        /**
+         * Resets all the RGB values
+         */
 		public void reset() {
 			m_count = 0;
 			m_cumX = m_cumY = m_cumZ = 0;
@@ -146,6 +157,8 @@ public class VectorQuantization implements IImageProcessor {
 					pal[i] = coordToRGB(colors.get(i));
 				}
 			} else {
+                // Initialize Coordinate Array which will represent all the Pixels of the Image.
+                // Each Pixel will be represented as a coordinate by which the x,y,z values are the rgb values.
 				Coordinate[] palColors = new Coordinate[n];
 				
 				// choose randomly n center colors
@@ -212,13 +225,44 @@ public class VectorQuantization implements IImageProcessor {
 		
 		// stop iterative process if the associations don't change anymore
 		while(changing) {
-			changing = false;
+			//changing = false;
 			
 			// compute new palette colors
 			// TODO
+            for(int i=0; i<assoc.length; i++){
+                int tmpR = 0;
+                int tmpG = 0;
+                int tmpB = 0;
+
+                int counter = 0;
+                for(RGB rgb : assoc[i]){
+                    tmpR += rgb.red;
+                    tmpB += rgb.blue;
+                    tmpG += rgb.green;
+
+                    counter++;
+                }
+                assoc[i].clear();
+                if(counter >0){
+                    palColors[i].setCoordinate(new Coordinate(tmpR/counter, tmpG/counter, tmpB/counter));
+                }else {
+                    System.out.println("LinkedList in Assoc Array at position: " + i + " was empty!");
+                }
+
+
+            }
 			
 			// compute new associations
 			// TODO
+            // fill in the association list
+
+            for (int v=0; v < inData.height; v++) {
+                for (int u=0; u < inData.width; u++) {
+                    RGB rgb = inData.palette.getRGB(inData.getPixel(u, v));
+                    int index = nearestPaletteColor(palColors, rgb);
+                    assoc[index].add(rgb);
+                }
+            }
 			
 			// prevent endless looping in never divergent cases
 			maxIterations--; 
