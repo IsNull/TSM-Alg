@@ -16,3 +16,6 @@ target/
 # Development environment
 .idea
 .settings
+
+#Data
+Zurich25m.csv
