@@ -226,6 +226,9 @@ public class VectorQuantization implements IImageProcessor {
 		// stop iterative process if the associations don't change anymore
 		while(changing) {
 
+            //Stop if the centroids doesn't change anymore
+            changing = false;
+
 			// compute new palette colors
 			// TODO done
 
@@ -254,7 +257,11 @@ public class VectorQuantization implements IImageProcessor {
 
                 // Set the new centroid to the color palette by calculating the average color of the cluster.
                 if(counter >0){
-                    palColors[i].setCoordinate(new Coordinate(tmpR/counter, tmpG/counter, tmpB/counter));
+                    //Check if the centroid has changed
+                    if(palColors[i].compareTo(new Coordinate(tmpR/counter, tmpG/counter, tmpB/counter)) != 0){
+                        palColors[i].setCoordinate(new Coordinate(tmpR / counter, tmpG / counter, tmpB / counter));
+                        changing = true;
+                    }
                 }else {
                     System.out.println("LinkedList in Assoc Array at position: " + i + " was empty!");
                 }
