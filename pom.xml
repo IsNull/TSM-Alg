@@ -16,8 +16,49 @@
             <url>https://swt-repo.googlecode.com/svn/repo/</url>
         </repository>
     </repositories>
+    
+    <profiles>
+    
+    	<!--  WINDOWS -->
+    	<profile>
+    		<id>windows</id>
+	    	<activation>
+		      <os>
+		        <family>windows</family>
+		      </os>
+		    </activation>
+		    
+		  	<dependencies>
+		    	<dependency>
+	                <groupId>org.eclipse.swt</groupId>
+	                <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+	                <version>4.4</version>
+            	</dependency>
+		    </dependencies>
+    	</profile>
+    	
+    	<!--  OS X -->
+    	<profile>
+    		<id>osx</id>
+	    	<activation>
+		      <os>
+		        <family>mac</family>
+		      </os>
+		    </activation>
+		    
+		    
+		    <dependencies>
+		    	<dependency>
+	                <groupId>org.eclipse.swt</groupId>
+	                <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+	                <version>4.4</version>
+            	</dependency>
+		    </dependencies>
+    	</profile>
+    
+    </profiles>
 
-
+	<!-- General Dependencies -->
     <dependencies>
 
         <dependency>
@@ -32,16 +73,9 @@
             <version>4.11</version>
         </dependency>
 
-            <dependency>
-                <groupId>org.eclipse.swt</groupId>
-                <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
-                <version>4.4</version>
-            </dependency>
-
     </dependencies>
 
     <build>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
